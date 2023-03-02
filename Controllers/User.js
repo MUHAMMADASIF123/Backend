@@ -1,4 +1,29 @@
 import User from "../Models/UserModel.js";
+import Joi from "joi";
+import validateUser from "../Validations/UserValidate.js";
+import JoiHelper from "../Utiles/JoiHelper.js";
+export const register = async (req, res) => {
+  try {
+    // Check Validation
+    if (JoiHelper(validateUser, req.body, res)?.statusCode) return;
+
+    const { name, email, password } = req.body;
+
+    const newuser = new User({
+      name,
+      email,
+      password,
+    });
+
+    await newuser.save();
+
+    res.status(200).json({ message: "Login successfully" });
+  } catch (error) {
+    return res.status(error?.statusCode || 400).json({
+      message: error.message || "Something went Wrong",
+    });
+  }
+};
 
 export const getUsers = async (req, res) => {
   try {
